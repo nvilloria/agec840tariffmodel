@@ -1,0 +1,64 @@
+#' Compute welfare changes between a baseline and counterfactual equilibrium
+#'
+#' `welfare.change()` computes the welfare effects of moving from a base
+#' equilibrium (`base`) to a counterfactual equilibrium (`cf`).
+#'
+#' @details
+#' **Approximation Strategy**
+#' All surplus areas use the trapezoidal rule, which equals the sum of the
+#' standard triangles and rectangles in the partial equilibrium diagrams.
+#' * \eqn{\Delta CS = -((Q_{d0} + Q_{d1})/2) \times (P_{c1} - P_{c0})}
+#' * \eqn{\Delta PS = +((Q_{s0} + Q_{s1})/2) \times (P_{p1} - P_{p0})}
+#'
+#' The trapezoidal rule is exact for linear supply/demand and a very good
+#' approximation for the constant-elasticity functions used here.
+#'
+#' **Welfare Components**
+#' * `delta.cs`: consumer surplus change
+#' * `delta.ps`: producer surplus change
+#' * `tariff.rev`: change in tariff revenues collected by government
+#' * `prod.sub`: change in production subsidy cost (negative = gov. expenditure)
+#' * `cons.sub`: change in consumption subsidy cost (negative = gov. expenditure)
+#' * `quota.rents`: quota rents accruing to domestic agents (= 0 if foreign VER)
+#' * `tot.gain`: terms-of-trade gain (\eqn{M_{d1} \times (P_{w0} - P_{w1})}); positive if
+#'   the tariff depresses world prices (large-country effect)
+#' * `dw.loss`: deadweight welfare triangle B+D (always non-negative loss)
+#' * `net.welfare`: algebraic sum of all domestic welfare components
+#'
+#' The relationship between these is:
+#' `net.welfare = delta.cs + delta.ps + tariff.rev + prod.sub + cons.sub + quota.rents`
+#'
+#' The `tot.gain` component is already embedded in `delta.cs`, `delta.ps`, and
+#' `tariff.rev`, but it is reported separately for teaching purposes.
+#'
+#' @param base baseline equilibrium returned by [solve.model()]
+#' @param cf counterfactual equilibrium returned by [solve.model()]
+#' @param cal calibrated model returned by [calibrate.model()]
+#'
+#' @return A named list of class \code{welfare} with welfare components and net welfare.
+#' @export
+welfare.change <- function(base, cf, cal) {
+  delta.cs <- -((base$q.d + cf$q.d) / 2) * (cf$p.c - base$p.c)
+  delta.ps <- +((base$q.s + cf$q.s) / 2) * (cf$p.p - base$p.p)
+  tariff.rev <- cf$tariff.rev - base$tariff.rev
+  prod.sub <- -(cf$prod.sub.cost - base$prod.sub.cost)
+  cons.sub <- -(cf$cons.sub.cost - base$cons.sub.cost)
+  quota.rents <- cf$quota.rent.total * cf$rent.domestic
+  tot.gain <- cf$m.d * (base$p.w - cf$p.w)
+  dw.loss <- 0.5 * (base$m.d - cf$m.d) * (cf$p.d - cal$p.w0)
+  net.welfare <- delta.cs + delta.ps + tariff.rev + prod.sub + cons.sub + quota.rents
+
+  res <- list(
+    delta.cs    = delta.cs,
+    delta.ps    = delta.ps,
+    tariff.rev  = tariff.rev,
+    prod.sub    = prod.sub,
+    cons.sub    = cons.sub,
+    quota.rents = quota.rents,
+    tot.gain    = tot.gain,
+    dw.loss     = dw.loss,
+    net.welfare = net.welfare
+  )
+  class(res) <- "welfare"
+  res
+}

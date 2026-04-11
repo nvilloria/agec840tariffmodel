@@ -17,66 +17,156 @@ knitr::opts_chunk$set(
 
 # Overview
 
-This vignette demonstrates the core workflow for the `agec840tariffmodel`
-package. The package implements a one-good partial equilibrium model with
-constant elasticities, calibrated to a benchmark equilibrium and used to
-analyze tariffs, production subsidies, consumption subsidies, and quotas.
+This vignette implements the partial equilibrium trade policy model from AGEC 840 Lecture 16 (Francois, 1997) and extends it to cover import tariffs, production subsidies, consumption subsidies, and binding import quotas.
 
-## Calibration
+The model is built as a set of plain functions so that policy experiments are always explicit about what changes and relative to which baseline.
 
-We start by calibrating the model to benchmark data.
+## Model Equations
+
+* **Domestic demand**: $Q_d = K_d \times P_c^{\eta_d}$ (where $P_c$ is the consumer price)
+* **Domestic supply**: $Q_s = K_s \times P_p^{\epsilon_s}$ (where $P_p$ is the producer price)
+* **Import supply**: $M_s = K_{ms} \times P_w^{\epsilon_{ms}}$ (where $P_w$ is the world price)
+* **Import demand**: $M_d = Q_d - Q_s$
+* **Market clearing**: $M_d = M_s$ (solved for $P_d$)
+
+**Price linkages**:
+* $P_d = P_w \times (1 + \tau)$ [tariff wedge]
+* $P_c = P_d \times (1 - sc)$ [consumption subsidy lowers consumer price]
+* $P_p = P_d \times (1 + sp)$ [production subsidy raises producer price]
+
+# Worked Example: Stylized "Steel" Benchmark
+
+This example uses the stylized "steel" benchmark from Francois (1997).
+
+## Step 1: Calibration
+
+We recover the structural constants $K_d, K_s, K_{ms}$ and the derived excess-demand elasticity $\eta_{md}$ from benchmark data.
 
 ```{r calibration}
 library(agec840tariffmodel)
 cal <- calibrate.model(
-  kd     = 1000,
-  ks     = 700,
-  md     = 300,
-  eta.d  = -0.30,
-  eps.s  = 0.50,
-  eps.ms = 5.00,
-  tau    = 0.10
+  kd     = 1000,   # benchmark domestic consumption
+  ks     =  700,   # benchmark domestic production
+  eta.d  =  -0.30, # demand elasticity
+  eps.s  =   0.50, # supply elasticity
+  eps.ms =   5.00, # import supply elasticity
+  tau    =   0.10  # benchmark tariff: 10%
 )
-cal
+
+cat(sprintf("  K_d    = %.4f\n", cal$k.d))
+cat(sprintf("  K_s    = %.4f\n", cal$k.s))
+cat(sprintf("  K_ms   = %.4f\n", cal$k.ms))
+cat(sprintf("  eta.md = %.4f  (excess demand elasticity)\n", cal$eta.md))
 ```
 
-## Baseline equilibrium
+## Step 2: Baseline Solution
 
-Solve the benchmark equilibrium using the calibrated model.
+The baseline should reproduce the benchmark quantities exactly, with the domestic price normalized to 1.
 
 ```{r baseline}
 base <- solve.model(cal)
 print.solution(base, "Baseline: 10% tariff")
 ```
 
-## Tariff counterfactual
+## Experiment 1: Raise Tariff to 20%
 
-Raise the tariff to 20% and compare the counterfactual to the baseline.
+A classic result: the domestic price rises, the world price falls (large-country effect), and imports shrink.
 
-```{r tariff}
-cf <- solve.model(cal, tau = 0.20)
-print.solution(cf, "Counterfactual: 20% tariff")
-wf <- welfare.change(base, cf, cal)
-print.welfare(wf, "Welfare change: 10% -> 20% tariff")
+```{r experiment1}
+cf1 <- solve.model(cal, tau = 0.20)
+print.solution(cf1, "Exp 1: Tariff raised to 20%")
+wf1 <- welfare.change(base, cf1, cal)
+print.welfare(wf1, "Welfare: Baseline -> Tariff 20%")
 ```
 
-## Quota example
+## Experiment 2: Free Trade
 
-Run a quota counterfactual with domestic rent capture.
+Removing the tariff altogether.
 
-```{r quota}
-cf.quota <- solve.model(cal, tau = 0, quota = 240, rent.domestic = 1)
-print.solution(cf.quota, "Quota: 240 units, domestic rents")
-wf.quota <- welfare.change(base, cf.quota, cal)
-print.welfare(wf.quota, "Welfare change: baseline -> quota")
+```{r experiment2}
+cf2 <- solve.model(cal, tau = 0.00)
+print.solution(cf2, "Exp 2: Free trade (tau = 0)")
+wf2 <- welfare.change(base, cf2, cal)
+print.welfare(wf2, "Welfare: Baseline -> Free Trade")
 ```
 
-## Price transmission
+## Experiment 3: Production Subsidy Instead of Tariff
 
-The package also includes a log-linear approximation for the price
-transmission elasticity.
+We provide the same producer support ($sp=0.10$), but consumers no longer bear the cost. The efficiency loss is typically smaller as it only involves the production distortion (triangle B), not the consumption distortion (triangle D).
 
-```{r transmission}
-approx <- linear.approx(cal, tau = 0.20)
-approx
+```{r experiment3}
+cf3 <- solve.model(cal, tau = 0.00, sp = 0.10)
+print.solution(cf3, "Exp 3: Free trade + production subsidy sp=10%")
+wf3 <- welfare.change(base, cf3, cal)
+print.welfare(wf3, "Welfare: Baseline -> tau=0, sp=10%")
 ```
+
+## Experiment 4: Consumption Subsidy
+
+The government subsidizes consumers directly. Domestic demand and imports rise.
+
+```{r experiment4}
+cf4 <- solve.model(cal, tau = 0.00, sc = 0.10)
+print.solution(cf4, "Exp 4: Free trade + consumption subsidy sc=10%")
+wf4 <- welfare.change(base, cf4, cal)
+print.welfare(wf4, "Welfare: Baseline -> tau=0, sc=10%")
+```
+
+## Experiment 5: Binding Import Quota
+
+We restrict imports to 80% of the benchmark level (240 units). The welfare impact depends heavily on who captures the quota rents.
+
+### 5a: Domestic Rent Capture
+The outcome is equivalent to a tariff in welfare terms if the government auctions the licenses.
+
+```{r experiment5a}
+quota.level <- 0.80 * cal$md        # = 240 units
+cf5a <- solve.model(cal, tau = 0.00, quota = quota.level, rent.domestic = 1)
+print.solution(cf5a, "Exp 5a: Quota = 240 units (domestic rent capture)")
+wf5a <- welfare.change(base, cf5a, cal)
+print.welfare(wf5a, "Welfare: Baseline -> Quota, domestic rents")
+```
+
+### 5b: Foreign Rent Capture (VER)
+If foreign exporters capture the rents (Voluntary Export Restraint), there is an additional loss to the domestic economy.
+
+```{r experiment5b}
+cf5b <- solve.model(cal, tau = 0.00, quota = quota.level, rent.domestic = 0)
+print.solution(cf5b, "Exp 5b: Same quota (foreign rent capture -- VER)")
+wf5b <- welfare.change(base, cf5b, cal)
+print.welfare(wf5b, "Welfare: Baseline -> Quota, foreign rents (VER)")
+```
+
+# Advanced Analysis
+
+## Multi-Scenario Comparison
+
+```{r comparison}
+tbl <- compare.scenarios(
+  cal,
+  "Baseline (tau=10%)"  = list(tau = 0.10),
+  "Tariff 20%"          = list(tau = 0.20),
+  "Free trade"          = list(tau = 0.00),
+  "Prod sub 10%"        = list(tau = 0.00, sp = 0.10),
+  "Cons sub 10%"        = list(tau = 0.00, sc = 0.10),
+  "Quota 240 (dom)"     = list(tau = 0.00, quota = 240, rent.domestic = 1),
+  "Quota 240 (VER)"     = list(tau = 0.00, quota = 240, rent.domestic = 0)
+)
+knitr::kable(tbl, digits = 3)
+```
+
+## Price Transmission and Country Size
+
+The price transmission elasticity ($d \log P_d / d \log(1+\tau)$) indicates how much of a tariff change is passed through to domestic prices. It approaches 1 for a small country (infinite import supply elasticity) and falls toward 0 as the country becomes larger.
+
+```{r sensitivity}
+eps.grid <- c(0.5, 1, 2, 4, 8, 20, 100, 1000)
+trans    <- sapply(eps.grid, function(e) {
+  cal.tmp <- calibrate.model(kd=1000, ks=700, eta.d=-0.30, eps.s=0.50, eps.ms=e, tau=0.10)
+  linear.approx(cal.tmp, tau=0.20)$transmission.domestic
+})
+res <- data.frame(eps.ms = eps.grid, transmission = trans)
+knitr::kable(res, digits = 4, col.names = c("Import Supply Elasticity (eps.ms)", "Price Transmission Elasticity"))
+```
+
+As `eps.ms` increases, the country approaches the small-country case, and the full tariff change is passed through to domestic consumers.
