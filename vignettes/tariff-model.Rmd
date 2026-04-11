@@ -1,0 +1,82 @@
+---
+title: "AGEC 840 Tariff Model"
+author: "Nelson Villoria"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AGEC 840 Tariff Model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Overview
+
+This vignette demonstrates the core workflow for the `agec840tariffmodel`
+package. The package implements a one-good partial equilibrium model with
+constant elasticities, calibrated to a benchmark equilibrium and used to
+analyze tariffs, production subsidies, consumption subsidies, and quotas.
+
+## Calibration
+
+We start by calibrating the model to benchmark data.
+
+```{r calibration}
+library(agec840tariffmodel)
+cal <- calibrate.model(
+  kd     = 1000,
+  ks     = 700,
+  md     = 300,
+  eta.d  = -0.30,
+  eps.s  = 0.50,
+  eps.ms = 5.00,
+  tau    = 0.10
+)
+cal
+```
+
+## Baseline equilibrium
+
+Solve the benchmark equilibrium using the calibrated model.
+
+```{r baseline}
+base <- solve.model(cal)
+print.solution(base, "Baseline: 10% tariff")
+```
+
+## Tariff counterfactual
+
+Raise the tariff to 20% and compare the counterfactual to the baseline.
+
+```{r tariff}
+cf <- solve.model(cal, tau = 0.20)
+print.solution(cf, "Counterfactual: 20% tariff")
+wf <- welfare.change(base, cf, cal)
+print.welfare(wf, "Welfare change: 10% -> 20% tariff")
+```
+
+## Quota example
+
+Run a quota counterfactual with domestic rent capture.
+
+```{r quota}
+cf.quota <- solve.model(cal, tau = 0, quota = 240, rent.domestic = 1)
+print.solution(cf.quota, "Quota: 240 units, domestic rents")
+wf.quota <- welfare.change(base, cf.quota, cal)
+print.welfare(wf.quota, "Welfare change: baseline -> quota")
+```
+
+## Price transmission
+
+The package also includes a log-linear approximation for the price
+transmission elasticity.
+
+```{r transmission}
+approx <- linear.approx(cal, tau = 0.20)
+approx
+```
