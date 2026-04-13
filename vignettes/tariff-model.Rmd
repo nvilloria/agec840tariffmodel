@@ -17,9 +17,13 @@ knitr::opts_chunk$set(
 
 # Overview
 
-This vignette implements the partial equilibrium trade policy model from AGEC 840 Lecture 16 (Francois, 1997) and extends it to cover import tariffs, production subsidies, consumption subsidies, and binding import quotas.
+This vignette implements a one-country, one-commodity partial equilibrium trade policy model
+based on Francois (1997)'s Perfect Substitutes Trade Model and extends it to cover import tariffs, production subsidies, consumption subsidies, and binding import quotas.
 
-The model is built as a set of plain functions so that policy experiments are always explicit about what changes and relative to which baseline.
+Francois, J.F., and Hall, H.K. (1997). "Partial Equilibrium Modeling."
+Chapter 5 in Applied Methods for Trade Policy Analysis: A Handbook,
+edited by J.F. Francois and K.A. Reinert. Cambridge: Cambridge
+University Press. The original spreadsheet implementations is available from the Institute for International and Development Economics at: https://www.i4ide.org/people/~francois/Models/index.htm
 
 ## Model Equations
 

@@ -23,9 +23,9 @@
 #' @param eta.d demand price elasticity (must be < 0)
 #' @param eps.s supply price elasticity (must be > 0)
 #' @param eps.ms import supply (excess supply) elasticity (must be > 0)
-#' @param tau benchmark tariff, ad valorem rate (e.g. 0.10 = 10%; default 0)
-#' @param sp benchmark production subsidy rate (ad valorem; default 0)
-#' @param sc benchmark consumption subsidy rate (ad valorem; default 0)
+#' @param tau benchmark tariff, ad valorem rate (e.g. 0.10 = 10%; default 0); must be >= 0.
+#' @param sp benchmark production subsidy rate (ad valorem; default 0); must be >= 0.
+#' @param sc benchmark consumption subsidy rate (ad valorem; default 0); must be >=0, < 1.
 #'
 #' @return A named list of class \code{model} -- the "calibrated model" -- to be passed to
 #'          [solve.model()] and [welfare.change()].
