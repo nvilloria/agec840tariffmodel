@@ -12,7 +12,21 @@ compare_scenarios(cal, ...)
 \item{...}{named lists of scenario parameters}
 }
 \value{
-A data frame comparing prices, quantities, and welfare across scenarios.
+A data frame with one row per scenario and columns:
+\describe{
+\item{scenario}{Scenario name.}
+\item{tau.pct, sp.pct, sc.pct}{Policy rates in percent.}
+\item{quota}{Quota level, or \code{NA} for tariff/subsidy scenarios.}
+\item{p.d, p.w}{Equilibrium domestic and world prices.}
+\item{q.d, q.s, m.d}{Equilibrium demand, domestic supply, and net imports.}
+\item{delta.cs, delta.ps}{Changes in consumer and producer surplus relative to
+the calibration benchmark.}
+\item{tariff.rev}{Change in tariff revenue.}
+\item{prod.sub, cons.sub}{Changes in production and consumption subsidy costs.}
+\item{quota.rents}{Quota rents accruing to domestic agents.}
+\item{tot.gain}{Terms-of-trade gain (memo item).}
+\item{net.welfare}{Net national welfare change relative to the calibration benchmark.}
+}
 }
 \description{
 \code{compare_scenarios()} runs a list of policy scenarios and returns a

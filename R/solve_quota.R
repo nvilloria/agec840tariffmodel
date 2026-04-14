@@ -19,7 +19,22 @@
 #' @param rent.domestic share in \code{[0,1]} of quota rents captured by domestic agents
 #'                      (default 1; set to 0 for a VER-type foreign-rent scenario)
 #'
-#' @return A named list of class \code{solution} with equilibrium prices, quantities, and fiscal items.
+#' @return A named list of class \code{solution} with:
+#' \describe{
+#'   \item{p.d}{Domestic price: the level at which domestic demand minus domestic supply equals the quota.}
+#'   \item{p.w}{World price: \eqn{P_w = (M_q / K_{ms})^{1/\epsilon_{ms}}}, the price at which
+#'     foreign export supply exactly equals the quota.}
+#'   \item{p.c}{Consumer price: \eqn{P_c = P_d (1 - sc)}.}
+#'   \item{p.p}{Producer price: \eqn{P_p = P_d (1 + sp)}.}
+#'   \item{q.d}{Domestic demand quantity.}
+#'   \item{q.s}{Domestic supply quantity.}
+#'   \item{m.d}{Net imports, equal to \code{quota} by construction.}
+#'   \item{quota.rent.unit}{Price wedge per unit: \eqn{P_d - P_w}.}
+#'   \item{quota.rent.total}{Total quota rents: \eqn{(P_d - P_w) \times M_q}.}
+#'   \item{tariff.rev}{Set to 0 (tariffs are inactive when a binding quota is in effect).}
+#'   \item{prod.sub.cost, cons.sub.cost}{Subsidy expenditures.}
+#'   \item{mode, quota, sp, sc, rent.domestic}{Policy parameters and mode identifier.}
+#' }
 #' @importFrom stats uniroot
 #' @export
 solve_quota <- function(cal,

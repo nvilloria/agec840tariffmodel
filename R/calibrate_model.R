@@ -15,8 +15,20 @@
 #' * \eqn{K_{ms}}: set so that \eqn{M_s(P_{w0}) = md} (market clearing at benchmark)
 #'   \eqn{P_{w0} = 1/(1+tau)}, \eqn{K_{ms} = md / P_{w0}^{\epsilon_{ms}} = md \times (1+tau)^{\epsilon_{ms}}}
 #' * \eqn{\eta_{md}} (excess demand elasticity):
-#'   \eqn{\eta_{md} = (kd \times \eta_d - ks \times \epsilon_s) / md}
-#'   Derived in Lecture 16 from differentiating \eqn{M_d = Q_d - Q_s}.
+#'   \eqn{\eta_{md} = (kd \times \eta_d - ks \times \epsilon_s) / md}.
+#'
+#' **Why \eqn{K_{ms} \neq md} when \eqn{tau > 0}**
+#'
+#' \eqn{K_d}, \eqn{K_s}, and \eqn{K_{ms}} are scale constants for functions
+#' anchored to *different* benchmark prices.  Domestic demand and supply are
+#' evaluated at the domestic price \eqn{P_{d0} = 1}, so \eqn{K_d = kd} and
+#' \eqn{K_s = ks}.  Import supply is evaluated at the *world* price
+#' \eqn{P_{w0} = 1/(1+tau) < 1} when there is a tariff.  To deliver the same
+#' benchmark import quantity \eqn{md} at that lower world price, \eqn{K_{ms}}
+#' must be larger: \eqn{K_{ms} = md \times (1+tau)^{\epsilon_{ms}}}.
+#' Consequently \eqn{K_{ms} = K_d - K_s} only when \eqn{tau = 0} (and
+#' \eqn{sp = sc = 0}), when all prices coincide at 1.  The relation that always
+#' holds is between benchmark *quantities*: \eqn{kd - ks = md}.
 #'
 #' @param kd benchmark domestic consumption (positive quantity, e.g. mt)
 #' @param ks benchmark domestic production  (positive quantity)
@@ -27,8 +39,20 @@
 #' @param sp benchmark production subsidy rate (ad valorem; default 0); must be >= 0.
 #' @param sc benchmark consumption subsidy rate (ad valorem; default 0); must be >=0, < 1.
 #'
-#' @return A named list of class \code{model} -- the "calibrated model" -- to be passed to
-#'          [solve_taxes()] and [welfare_change()].
+#' @return A named list of class \code{model} with the following elements:
+#' \describe{
+#'   \item{kd, ks, md}{Benchmark quantities: total domestic demand, domestic supply,
+#'     and net imports (\eqn{md = kd - ks}).}
+#'   \item{eta.d, eps.s, eps.ms}{Elasticities as supplied by the user.}
+#'   \item{tau, sp, sc}{Benchmark policy rates as supplied.}
+#'   \item{k.d, k.s, k.ms}{Calibrated scale constants for the demand, domestic supply,
+#'     and import supply functions respectively.}
+#'   \item{eta.md}{Derived excess-demand (import demand) elasticity with respect to
+#'     the domestic price; negative by construction.}
+#'   \item{p.d0, p.w0, p.c0, p.p0}{Benchmark prices: domestic, world, consumer, and
+#'     producer prices (all equal to 1 except \eqn{P_{w0} = 1/(1+tau)} when
+#'     \eqn{tau > 0}).}
+#' }
 #' @export
 calibrate_model <- function(kd, ks,
                              eta.d, eps.s, eps.ms,

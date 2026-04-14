@@ -26,7 +26,17 @@
 #' @param cal calibrated model returned by [calibrate_model()]
 #' @param tau tariff rate for the approximation
 #'
-#' @return A named list with approximated prices and transmission elasticities.
+#' @return A named list with:
+#' \describe{
+#'   \item{p.d.approx}{Approximated domestic price at the given \code{tau}.}
+#'   \item{p.w.approx}{Approximated world price: \eqn{P_d / (1 + tau)}.}
+#'   \item{transmission.domestic}{Price transmission elasticity to the domestic market:
+#'     \eqn{\epsilon_{ms} / (\epsilon_{ms} - \eta_{md})}. Approaches 1 as
+#'     \eqn{\epsilon_{ms} \to \infty} (small country); less than 1 for a large country.}
+#'   \item{transmission.world}{Price transmission elasticity to the world market:
+#'     \eqn{\eta_{md} / (\epsilon_{ms} - \eta_{md})}. Negative, reflecting the
+#'     terms-of-trade effect: a tariff lowers the world price.}
+#' }
 #' @export
 linear_approx <- function(cal, tau) {
   k.md   <- cal$md

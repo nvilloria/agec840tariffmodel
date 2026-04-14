@@ -14,7 +14,21 @@
 #' @param sp new production subsidy rate (default: calibration sp)
 #' @param sc new consumption subsidy rate (default: calibration sc)
 #'
-#' @return A named list of class \code{solution} with equilibrium prices, quantities, and fiscal items.
+#' @return A named list of class \code{solution} with:
+#' \describe{
+#'   \item{p.d}{Equilibrium domestic price (normalized to 1 at the calibration benchmark).}
+#'   \item{p.w}{World price: \eqn{P_w = P_d / (1 + tau)}.}
+#'   \item{p.c}{Consumer price: \eqn{P_c = P_d (1 - sc)}.}
+#'   \item{p.p}{Producer price: \eqn{P_p = P_d (1 + sp)}.}
+#'   \item{q.d}{Domestic demand quantity: \eqn{Q_d = K_d P_c^{\eta_d}}.}
+#'   \item{q.s}{Domestic supply quantity: \eqn{Q_s = K_s P_p^{\epsilon_s}}.}
+#'   \item{m.d}{Net imports: \eqn{M_d = Q_d - Q_s} (always equals import supply at equilibrium).}
+#'   \item{tariff.rev}{Tariff revenue: \eqn{M_d \times tau \times P_w}.}
+#'   \item{prod.sub.cost}{Production subsidy expenditure: \eqn{Q_s \times sp \times P_d}.}
+#'   \item{cons.sub.cost}{Consumption subsidy expenditure: \eqn{Q_d \times sc \times P_d}.}
+#'   \item{quota, quota.rent.unit, quota.rent.total}{Set to \code{NULL} and 0 (quota not active in this solver).}
+#'   \item{mode, tau, sp, sc, rent.domestic}{Policy parameters and mode identifier.}
+#' }
 #' @importFrom stats uniroot
 #' @export
 solve_taxes <- function(cal,
