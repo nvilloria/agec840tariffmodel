@@ -1,6 +1,6 @@
 #' Calibrate the partial equilibrium model from benchmark data
 #'
-#' `calibrate.model()` recovers the structural constants \eqn{K_d, K_s, K_{ms}} and the
+#' `calibrate_model()` recovers the structural constants \eqn{K_d, K_s, K_{ms}} and the
 #' derived excess-demand elasticity \eqn{\eta_{md}} from benchmark (observed) data and
 #' assumed parameter values.
 #'
@@ -28,9 +28,9 @@
 #' @param sc benchmark consumption subsidy rate (ad valorem; default 0); must be >=0, < 1.
 #'
 #' @return A named list of class \code{model} -- the "calibrated model" -- to be passed to
-#'          [solve.model()] and [welfare.change()].
+#'          [solve_taxes()] and [welfare_change()].
 #' @export
-calibrate.model <- function(kd, ks,
+calibrate_model <- function(kd, ks,
                              eta.d, eps.s, eps.ms,
                              tau = 0, sp = 0, sc = 0) {
 

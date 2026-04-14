@@ -1,6 +1,6 @@
 #' Log-linear approximation for the domestic and world prices
 #'
-#' `linear.approx()` implements the closed-form domestic price formula obtained
+#' `linear_approx()` implements the closed-form domestic price formula obtained
 #' by log-linearizing the market-clearing condition and solving for \eqn{\log(P_d)}.
 #'
 #' @details
@@ -23,12 +23,12 @@
 #' * Small country (\eqn{\epsilon_{ms} \rightarrow \infty}): ratio \eqn{\rightarrow 1} (full pass-through)
 #' * Large country (finite \eqn{\epsilon_{ms}}): ratio \eqn{< 1} (partial pass-through)
 #'
-#' @param cal calibrated model returned by [calibrate.model()]
+#' @param cal calibrated model returned by [calibrate_model()]
 #' @param tau tariff rate for the approximation
 #'
 #' @return A named list with approximated prices and transmission elasticities.
 #' @export
-linear.approx <- function(cal, tau) {
+linear_approx <- function(cal, tau) {
   k.md   <- cal$md
   k.ms   <- cal$k.ms
   eta.md <- cal$eta.md

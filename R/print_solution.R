@@ -1,15 +1,15 @@
 #' Print a formatted equilibrium solution
 #'
-#' `print.solution()` provides a formatted summary of one equilibrium solution,
+#' `print_solution()` provides a formatted summary of one equilibrium solution,
 #' including prices, quantities, and fiscal items.
 #'
-#' @param x a solution list of class \code{solution} returned by [solve.model()]
+#' @param x a solution list of class \code{solution} returned by [solve_taxes()] or [solve_quota()]
 #' @param label optional label to display
 #' @param ... further arguments passed to or from other methods
 #'
 #' @return The solution list (invisibly).
-#' @rawNamespace export(print.solution)
-print.solution <- function(x, label = "Solution", ...) {
+#' @export
+print_solution <- function(x, label = "Solution", ...) {
   cat("\n===", label, "===\n")
   cat(sprintf("  Mode          : %s\n", x$mode))
   cat(sprintf("  Tariff (tau)  : %6.1f%%\n", x$tau * 100))

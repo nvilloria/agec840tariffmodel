@@ -20,10 +20,6 @@ knitr::opts_chunk$set(
 This vignette implements a one-country, one-commodity partial equilibrium trade policy model
 based on Francois (1997)'s Perfect Substitutes Trade Model and extends it to cover import tariffs, production subsidies, consumption subsidies, and binding import quotas.
 
-Francois, J.F., and Hall, H.K. (1997). "Partial Equilibrium Modeling."
-Chapter 5 in Applied Methods for Trade Policy Analysis: A Handbook,
-edited by J.F. Francois and K.A. Reinert. Cambridge: Cambridge
-University Press. The original spreadsheet implementations is available from the Institute for International and Development Economics at: https://www.i4ide.org/people/~francois/Models/index.htm
 
 ## Model Equations
 
@@ -48,7 +44,7 @@ We recover the structural constants $K_d, K_s, K_{ms}$ and the derived excess-de
 
 ```{r calibration}
 library(agec840tariffmodel)
-cal <- calibrate.model(
+cal <- calibrate_model(
   kd     = 1000,   # benchmark domestic consumption
   ks     =  700,   # benchmark domestic production
   eta.d  =  -0.30, # demand elasticity
@@ -68,8 +64,8 @@ cat(sprintf("  eta.md = %.4f  (excess demand elasticity)\n", cal$eta.md))
 The baseline should reproduce the benchmark quantities exactly, with the domestic price normalized to 1.
 
 ```{r baseline}
-base <- solve.model(cal)
-print.solution(base, "Baseline: 10% tariff")
+base <- solve_taxes(cal)
+print_solution(base, "Baseline: 10% tariff")
 ```
 
 ## Experiment 1: Raise Tariff to 20%
@@ -77,10 +73,10 @@ print.solution(base, "Baseline: 10% tariff")
 A classic result: the domestic price rises, the world price falls (large-country effect), and imports shrink.
 
 ```{r experiment1}
-cf1 <- solve.model(cal, tau = 0.20)
-print.solution(cf1, "Exp 1: Tariff raised to 20%")
-wf1 <- welfare.change(base, cf1, cal)
-print.welfare(wf1, "Welfare: Baseline -> Tariff 20%")
+cf1 <- solve_taxes(cal, tau = 0.20)
+print_solution(cf1, "Exp 1: Tariff raised to 20%")
+wf1 <- welfare_change(base, cf1, cal)
+print_welfare(wf1, "Welfare: Baseline -> Tariff 20%")
 ```
 
 ## Experiment 2: Free Trade
@@ -88,10 +84,10 @@ print.welfare(wf1, "Welfare: Baseline -> Tariff 20%")
 Removing the tariff altogether.
 
 ```{r experiment2}
-cf2 <- solve.model(cal, tau = 0.00)
-print.solution(cf2, "Exp 2: Free trade (tau = 0)")
-wf2 <- welfare.change(base, cf2, cal)
-print.welfare(wf2, "Welfare: Baseline -> Free Trade")
+cf2 <- solve_taxes(cal, tau = 0.00)
+print_solution(cf2, "Exp 2: Free trade (tau = 0)")
+wf2 <- welfare_change(base, cf2, cal)
+print_welfare(wf2, "Welfare: Baseline -> Free Trade")
 ```
 
 ## Experiment 3: Production Subsidy Instead of Tariff
@@ -99,10 +95,10 @@ print.welfare(wf2, "Welfare: Baseline -> Free Trade")
 We provide the same producer support ($sp=0.10$), but consumers no longer bear the cost. The efficiency loss is typically smaller as it only involves the production distortion (triangle B), not the consumption distortion (triangle D).
 
 ```{r experiment3}
-cf3 <- solve.model(cal, tau = 0.00, sp = 0.10)
-print.solution(cf3, "Exp 3: Free trade + production subsidy sp=10%")
-wf3 <- welfare.change(base, cf3, cal)
-print.welfare(wf3, "Welfare: Baseline -> tau=0, sp=10%")
+cf3 <- solve_taxes(cal, tau = 0.00, sp = 0.10)
+print_solution(cf3, "Exp 3: Free trade + production subsidy sp=10%")
+wf3 <- welfare_change(base, cf3, cal)
+print_welfare(wf3, "Welfare: Baseline -> tau=0, sp=10%")
 ```
 
 ## Experiment 4: Consumption Subsidy
@@ -110,10 +106,10 @@ print.welfare(wf3, "Welfare: Baseline -> tau=0, sp=10%")
 The government subsidizes consumers directly. Domestic demand and imports rise.
 
 ```{r experiment4}
-cf4 <- solve.model(cal, tau = 0.00, sc = 0.10)
-print.solution(cf4, "Exp 4: Free trade + consumption subsidy sc=10%")
-wf4 <- welfare.change(base, cf4, cal)
-print.welfare(wf4, "Welfare: Baseline -> tau=0, sc=10%")
+cf4 <- solve_taxes(cal, tau = 0.00, sc = 0.10)
+print_solution(cf4, "Exp 4: Free trade + consumption subsidy sc=10%")
+wf4 <- welfare_change(base, cf4, cal)
+print_welfare(wf4, "Welfare: Baseline -> tau=0, sc=10%")
 ```
 
 ## Experiment 5: Binding Import Quota
@@ -125,20 +121,20 @@ The outcome is equivalent to a tariff in welfare terms if the government auction
 
 ```{r experiment5a}
 quota.level <- 0.80 * cal$md        # = 240 units
-cf5a <- solve.model(cal, tau = 0.00, quota = quota.level, rent.domestic = 1)
-print.solution(cf5a, "Exp 5a: Quota = 240 units (domestic rent capture)")
-wf5a <- welfare.change(base, cf5a, cal)
-print.welfare(wf5a, "Welfare: Baseline -> Quota, domestic rents")
+cf5a <- solve_quota(cal, quota = quota.level, rent.domestic = 1)
+print_solution(cf5a, "Exp 5a: Quota = 240 units (domestic rent capture)")
+wf5a <- welfare_change(base, cf5a, cal)
+print_welfare(wf5a, "Welfare: Baseline -> Quota, domestic rents")
 ```
 
 ### 5b: Foreign Rent Capture (VER)
 If foreign exporters capture the rents (Voluntary Export Restraint), there is an additional loss to the domestic economy.
 
 ```{r experiment5b}
-cf5b <- solve.model(cal, tau = 0.00, quota = quota.level, rent.domestic = 0)
-print.solution(cf5b, "Exp 5b: Same quota (foreign rent capture -- VER)")
-wf5b <- welfare.change(base, cf5b, cal)
-print.welfare(wf5b, "Welfare: Baseline -> Quota, foreign rents (VER)")
+cf5b <- solve_quota(cal, quota = quota.level, rent.domestic = 0)
+print_solution(cf5b, "Exp 5b: Same quota (foreign rent capture -- VER)")
+wf5b <- welfare_change(base, cf5b, cal)
+print_welfare(wf5b, "Welfare: Baseline -> Quota, foreign rents (VER)")
 ```
 
 # Advanced Analysis
@@ -146,15 +142,15 @@ print.welfare(wf5b, "Welfare: Baseline -> Quota, foreign rents (VER)")
 ## Multi-Scenario Comparison
 
 ```{r comparison}
-tbl <- compare.scenarios(
+tbl <- compare_scenarios(
   cal,
   "Baseline (tau=10%)"  = list(tau = 0.10),
   "Tariff 20%"          = list(tau = 0.20),
   "Free trade"          = list(tau = 0.00),
   "Prod sub 10%"        = list(tau = 0.00, sp = 0.10),
   "Cons sub 10%"        = list(tau = 0.00, sc = 0.10),
-  "Quota 240 (dom)"     = list(tau = 0.00, quota = 240, rent.domestic = 1),
-  "Quota 240 (VER)"     = list(tau = 0.00, quota = 240, rent.domestic = 0)
+  "Quota 240 (dom)"     = list(quota = 240, rent.domestic = 1),
+  "Quota 240 (VER)"     = list(quota = 240, rent.domestic = 0)
 )
 knitr::kable(tbl, digits = 3)
 ```
@@ -166,11 +162,17 @@ The price transmission elasticity ($d \log P_d / d \log(1+\tau)$) indicates how 
 ```{r sensitivity}
 eps.grid <- c(0.5, 1, 2, 4, 8, 20, 100, 1000)
 trans    <- sapply(eps.grid, function(e) {
-  cal.tmp <- calibrate.model(kd=1000, ks=700, eta.d=-0.30, eps.s=0.50, eps.ms=e, tau=0.10)
-  linear.approx(cal.tmp, tau=0.20)$transmission.domestic
+  cal.tmp <- calibrate_model(kd=1000, ks=700, eta.d=-0.30, eps.s=0.50, eps.ms=e, tau=0.10)
+  linear_approx(cal.tmp, tau=0.20)$transmission.domestic
 })
 res <- data.frame(eps.ms = eps.grid, transmission = trans)
 knitr::kable(res, digits = 4, col.names = c("Import Supply Elasticity (eps.ms)", "Price Transmission Elasticity"))
 ```
 
 As `eps.ms` increases, the country approaches the small-country case, and the full tariff change is passed through to domestic consumers.
+
+## References
+
+Francois, J.F., and Hall, H.K. (1997). "Partial Equilibrium Modeling." Chapter 5 in *Applied Methods for Trade Policy Analysis: A Handbook*, edited by J.F. Francois and K.A. Reinert. Cambridge: Cambridge University Press.
+
+The original spreadsheet implementations are available from the Institute for International and Development Economics at: <https://www.i4ide.org/people/~francois/Models/index.htm>.

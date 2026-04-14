@@ -1,6 +1,6 @@
 #' Compare multiple policy scenarios at once
 #'
-#' `compare.scenarios()` runs a list of policy scenarios and returns a
+#' `compare_scenarios()` runs a list of policy scenarios and returns a
 #' data frame with prices, quantities, and welfare for each.
 #'
 #' @details
@@ -8,17 +8,17 @@
 #' `tau`, `sp`, `sc`, `quota`, `rent.domestic`.
 #' Omitted fields default to the calibration benchmark values.
 #'
-#' @param cal calibrated model returned by [calibrate.model()]
+#' @param cal calibrated model returned by [calibrate_model()]
 #' @param ... named lists of scenario parameters
 #'
 #' @return A data frame comparing prices, quantities, and welfare across scenarios.
 #' @export
-compare.scenarios <- function(cal, ...) {
+compare_scenarios <- function(cal, ...) {
   scenarios <- list(...)
   if (is.null(names(scenarios)))
     names(scenarios) <- paste0("S", seq_along(scenarios))
 
-  base <- solve.model(cal)
+  base <- solve_taxes(cal)
 
   results <- lapply(names(scenarios), function(nm) {
     s   <- scenarios[[nm]]
@@ -28,9 +28,12 @@ compare.scenarios <- function(cal, ...) {
     q   <- s$quota
     rd  <- if (!is.null(s$rent.domestic)) s$rent.domestic else 1
 
-    cf  <- solve.model(cal, tau = tau, sp = sp, sc = sc,
-                       quota = q, rent.domestic = rd)
-    wf  <- welfare.change(base, cf, cal)
+    if (is.null(q)) {
+      cf  <- solve_taxes(cal, tau = tau, sp = sp, sc = sc)
+    } else {
+      cf  <- solve_quota(cal, quota = q, sp = sp, sc = sc, rent.domestic = rd)
+    }
+    wf  <- welfare_change(base, cf, cal)
 
     data.frame(
       scenario    = nm,

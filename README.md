@@ -17,17 +17,17 @@ devtools::install_github("nvilloria/agec840tariffmodel")
 library(agec840tariffmodel)
 
 # Calibrate model parameters
-cal <- calibrate.model(kd = 1000, ks = 700, md = 300,
+cal <- calibrate_model(kd = 1000, ks = 700, md = 300,
                        eta.d = -0.30, eps.s = 0.50, eps.ms = 5.00,
                        tau = 0.10)
 
 # Solve for equilibria
-base <- solve.model(cal)
-cf <- solve.model(cal, tau = 0.20)
+base <- solve_taxes(cal)
+cf <- solve_taxes(cal, tau = 0.20)
 
 # Calculate and print welfare effects
-welfare <- welfare.change(base, cf, cal)
-print.welfare(welfare)
+welfare <- welfare_change(base, cf, cal)
+print_welfare(welfare)
 ```
 
 ## References

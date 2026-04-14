@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Nelson Villoria" />
+
+
+<title>AGEC 840 Tariff Model</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">AGEC 840 Tariff Model</h1>
+<h4 class="author">Nelson Villoria</h4>
+
+
+
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This vignette implements a one-country, one-commodity partial
+equilibrium trade policy model based on Francois (1997)’s Perfect
+Substitutes Trade Model and extends it to cover import tariffs,
+production subsidies, consumption subsidies, and binding import
+quotas.</p>
+<div id="model-equations" class="section level2">
+<h2>Model Equations</h2>
+<ul>
+<li><strong>Domestic demand</strong>: <span class="math inline">\(Q_d =
+K_d \times P_c^{\eta_d}\)</span> (where <span class="math inline">\(P_c\)</span> is the consumer price)</li>
+<li><strong>Domestic supply</strong>: <span class="math inline">\(Q_s =
+K_s \times P_p^{\epsilon_s}\)</span> (where <span class="math inline">\(P_p\)</span> is the producer price)</li>
+<li><strong>Import supply</strong>: <span class="math inline">\(M_s =
+K_{ms} \times P_w^{\epsilon_{ms}}\)</span> (where <span class="math inline">\(P_w\)</span> is the world price)</li>
+<li><strong>Import demand</strong>: <span class="math inline">\(M_d =
+Q_d - Q_s\)</span></li>
+<li><strong>Market clearing</strong>: <span class="math inline">\(M_d =
+M_s\)</span> (solved for <span class="math inline">\(P_d\)</span>)</li>
+</ul>
+<p><strong>Price linkages</strong>: * <span class="math inline">\(P_d =
+P_w \times (1 + \tau)\)</span> [tariff wedge] * <span class="math inline">\(P_c = P_d \times (1 - sc)\)</span> [consumption
+subsidy lowers consumer price] * <span class="math inline">\(P_p = P_d
+\times (1 + sp)\)</span> [production subsidy raises producer price]</p>
+</div>
+</div>
+<div id="worked-example-stylized-steel-benchmark" class="section level1">
+<h1>Worked Example: Stylized “Steel” Benchmark</h1>
+<p>This example uses the stylized “steel” benchmark from Francois
+(1997).</p>
+<div id="step-1-calibration" class="section level2">
+<h2>Step 1: Calibration</h2>
+<p>We recover the structural constants <span class="math inline">\(K_d,
+K_s, K_{ms}\)</span> and the derived excess-demand elasticity <span class="math inline">\(\eta_{md}\)</span> from benchmark data.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(agec840tariffmodel)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>cal <span class="ot">&lt;-</span> <span class="fu">calibrate_model</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">kd     =</span> <span class="dv">1000</span>,   <span class="co"># benchmark domestic consumption</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">ks     =</span>  <span class="dv">700</span>,   <span class="co"># benchmark domestic production</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">eta.d  =</span>  <span class="sc">-</span><span class="fl">0.30</span>, <span class="co"># demand elasticity</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">eps.s  =</span>   <span class="fl">0.50</span>, <span class="co"># supply elasticity</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">eps.ms =</span>   <span class="fl">5.00</span>, <span class="co"># import supply elasticity</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="at">tau    =</span>   <span class="fl">0.10</span>  <span class="co"># benchmark tariff: 10%</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;  K_d    = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, cal<span class="sc">$</span>k.d))</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt;   K_d    = 1000.0000</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;  K_s    = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, cal<span class="sc">$</span>k.s))</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt;   K_s    = 700.0000</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;  K_ms   = %.4f</span><span class="sc">\n</span><span class="st">&quot;</span>, cal<span class="sc">$</span>k.ms))</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt;   K_ms   = 483.1530</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;  eta.md = %.4f  (excess demand elasticity)</span><span class="sc">\n</span><span class="st">&quot;</span>, cal<span class="sc">$</span>eta.md))</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt;   eta.md = -2.1667  (excess demand elasticity)</span></span></code></pre></div>
+</div>
+<div id="step-2-baseline-solution" class="section level2">
+<h2>Step 2: Baseline Solution</h2>
+<p>The baseline should reproduce the benchmark quantities exactly, with
+the domestic price normalized to 1.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>base <span class="ot">&lt;-</span> <span class="fu">solve_taxes</span>(cal)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">print_solution</span>(base, <span class="st">&quot;Baseline: 10% tariff&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; === Baseline: 10% tariff ===</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;   Mode          : tariff-subsidy</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;   Tariff (tau)  :   10.0%</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy :    0.0%</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy :    0.0%</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;   Prices:</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;     Domestic (P_d)  : 1.0000</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt;     World    (P_w)  : 0.9091</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;     Consumer (P_c)  : 1.0000</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt;     Producer (P_p)  : 1.0000</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;   Quantities:</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;     Domestic demand  (Q_d) :    1000.00</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;     Domestic supply  (Q_s) :     700.00</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt;     Net imports      (M_d) :     300.00</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt;   Government accounts:</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt;     Tariff revenue      :      27.27</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt;     Prod. subsidy cost  :       0.00</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt;     Cons. subsidy cost  :       0.00</span></span></code></pre></div>
+</div>
+<div id="experiment-1-raise-tariff-to-20" class="section level2">
+<h2>Experiment 1: Raise Tariff to 20%</h2>
+<p>A classic result: the domestic price rises, the world price falls
+(large-country effect), and imports shrink.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>cf1 <span class="ot">&lt;-</span> <span class="fu">solve_taxes</span>(cal, <span class="at">tau =</span> <span class="fl">0.20</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">print_solution</span>(cf1, <span class="st">&quot;Exp 1: Tariff raised to 20%&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; === Exp 1: Tariff raised to 20% ===</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;   Mode          : tariff-subsidy</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;   Tariff (tau)  :   20.0%</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy :    0.0%</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy :    0.0%</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt;   Prices:</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;     Domestic (P_d)  : 1.0612</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt;     World    (P_w)  : 0.8843</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt;     Consumer (P_c)  : 1.0612</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt;     Producer (P_p)  : 1.0612</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt;   Quantities:</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt;     Domestic demand  (Q_d) :     982.35</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt;     Domestic supply  (Q_s) :     721.09</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt;     Net imports      (M_d) :     261.26</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt;   Government accounts:</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt;     Tariff revenue      :      46.21</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt;     Prod. subsidy cost  :       0.00</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt;     Cons. subsidy cost  :       0.00</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>wf1 <span class="ot">&lt;-</span> <span class="fu">welfare_change</span>(base, cf1, cal)</span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="fu">print_welfare</span>(wf1, <span class="st">&quot;Welfare: Baseline -&gt; Tariff 20%&quot;</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a><span class="co">#&gt; === Welfare: Baseline -&gt; Tariff 20% ===</span></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">#&gt;   Delta CS (consumer surplus)   :     -60.62</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="co">#&gt;   Delta PS (producer surplus)   :     +43.45</span></span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a><span class="co">#&gt;   Tariff revenue  (change)      :     +18.93</span></span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a><span class="co">#&gt;   Quota rents (domestic share)  :      +0.00</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a><span class="co">#&gt;   ------------------------------------------------</span></span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt;   Net welfare                   :      +1.77</span></span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="co">#&gt;   [memo] Terms-of-trade gain    :      +6.48</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt;   [memo] DW loss triangle B+D   :      +2.95</span></span></code></pre></div>
+</div>
+<div id="experiment-2-free-trade" class="section level2">
+<h2>Experiment 2: Free Trade</h2>
+<p>Removing the tariff altogether.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>cf2 <span class="ot">&lt;-</span> <span class="fu">solve_taxes</span>(cal, <span class="at">tau =</span> <span class="fl">0.00</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">print_solution</span>(cf2, <span class="st">&quot;Exp 2: Free trade (tau = 0)&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; === Exp 2: Free trade (tau = 0) ===</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt;   Mode          : tariff-subsidy</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;   Tariff (tau)  :    0.0%</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy :    0.0%</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy :    0.0%</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;   Prices:</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt;     Domestic (P_d)  : 0.9343</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt;     World    (P_w)  : 0.9343</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt;     Consumer (P_c)  : 0.9343</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt;     Producer (P_p)  : 0.9343</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt;   Quantities:</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt;     Domestic demand  (Q_d) :    1020.59</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt;     Domestic supply  (Q_s) :     676.62</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt;     Net imports      (M_d) :     343.98</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt;   Government accounts:</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt;     Tariff revenue      :       0.00</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt;     Prod. subsidy cost  :       0.00</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt;     Cons. subsidy cost  :       0.00</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>wf2 <span class="ot">&lt;-</span> <span class="fu">welfare_change</span>(base, cf2, cal)</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="fu">print_welfare</span>(wf2, <span class="st">&quot;Welfare: Baseline -&gt; Free Trade&quot;</span>)</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; === Welfare: Baseline -&gt; Free Trade ===</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt;   Delta CS (consumer surplus)   :     +66.37</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt;   Delta PS (producer surplus)   :     -45.22</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt;   Tariff revenue  (change)      :     -27.27</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt;   Quota rents (domestic share)  :      +0.00</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt;   ------------------------------------------------</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt;   Net welfare                   :      -6.12</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt;   [memo] Terms-of-trade gain    :      -8.67</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt;   [memo] DW loss triangle B+D   :      -0.55</span></span></code></pre></div>
+</div>
+<div id="experiment-3-production-subsidy-instead-of-tariff" class="section level2">
+<h2>Experiment 3: Production Subsidy Instead of Tariff</h2>
+<p>We provide the same producer support (<span class="math inline">\(sp=0.10\)</span>), but consumers no longer bear
+the cost. The efficiency loss is typically smaller as it only involves
+the production distortion (triangle B), not the consumption distortion
+(triangle D).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>cf3 <span class="ot">&lt;-</span> <span class="fu">solve_taxes</span>(cal, <span class="at">tau =</span> <span class="fl">0.00</span>, <span class="at">sp =</span> <span class="fl">0.10</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">print_solution</span>(cf3, <span class="st">&quot;Exp 3: Free trade + production subsidy sp=10%&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; === Exp 3: Free trade + production subsidy sp=10% ===</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt;   Mode          : tariff-subsidy</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt;   Tariff (tau)  :    0.0%</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy :   10.0%</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy :    0.0%</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;   Prices:</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;     Domestic (P_d)  : 0.9211</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt;     World    (P_w)  : 0.9211</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt;     Consumer (P_c)  : 0.9211</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt;     Producer (P_p)  : 1.0132</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt;   Quantities:</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt;     Domestic demand  (Q_d) :    1024.96</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt;     Domestic supply  (Q_s) :     704.61</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt;     Net imports      (M_d) :     320.35</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt;   Government accounts:</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt;     Tariff revenue      :       0.00</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt;     Prod. subsidy cost  :      64.90</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt;     Cons. subsidy cost  :       0.00</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>wf3 <span class="ot">&lt;-</span> <span class="fu">welfare_change</span>(base, cf3, cal)</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="fu">print_welfare</span>(wf3, <span class="st">&quot;Welfare: Baseline -&gt; tau=0, sp=10%&quot;</span>)</span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt; === Welfare: Baseline -&gt; tau=0, sp=10% ===</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt;   Delta CS (consumer surplus)   :     +79.88</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt;   Delta PS (producer surplus)   :      +9.28</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt;   Tariff revenue  (change)      :     -27.27</span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy cost (change)   :     -64.90</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="co">#&gt;   Quota rents (domestic share)  :      +0.00</span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="co">#&gt;   ------------------------------------------------</span></span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a><span class="co">#&gt;   Net welfare                   :      -3.01</span></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a><span class="co">#&gt;   [memo] Terms-of-trade gain    :      -3.85</span></span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a><span class="co">#&gt;   [memo] DW loss triangle B+D   :      -0.12</span></span></code></pre></div>
+</div>
+<div id="experiment-4-consumption-subsidy" class="section level2">
+<h2>Experiment 4: Consumption Subsidy</h2>
+<p>The government subsidizes consumers directly. Domestic demand and
+imports rise.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>cf4 <span class="ot">&lt;-</span> <span class="fu">solve_taxes</span>(cal, <span class="at">tau =</span> <span class="fl">0.00</span>, <span class="at">sc =</span> <span class="fl">0.10</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">print_solution</span>(cf4, <span class="st">&quot;Exp 4: Free trade + consumption subsidy sc=10%&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; === Exp 4: Free trade + consumption subsidy sc=10% ===</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;   Mode          : tariff-subsidy</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;   Tariff (tau)  :    0.0%</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy :    0.0%</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy :   10.0%</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;   Prices:</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;     Domestic (P_d)  : 0.9470</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;     World    (P_w)  : 0.9470</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;     Consumer (P_c)  : 0.8523</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;     Producer (P_p)  : 0.9470</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;   Quantities:</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;     Domestic demand  (Q_d) :    1049.12</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt;     Domestic supply  (Q_s) :     681.19</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;     Net imports      (M_d) :     367.93</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt;   Government accounts:</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt;     Tariff revenue      :       0.00</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt;     Prod. subsidy cost  :       0.00</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt;     Cons. subsidy cost  :      99.35</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>wf4 <span class="ot">&lt;-</span> <span class="fu">welfare_change</span>(base, cf4, cal)</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="fu">print_welfare</span>(wf4, <span class="st">&quot;Welfare: Baseline -&gt; tau=0, sc=10%&quot;</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt; === Welfare: Baseline -&gt; tau=0, sc=10% ===</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt;   Delta CS (consumer surplus)   :    +151.35</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt;   Delta PS (producer surplus)   :     -36.62</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt;   Tariff revenue  (change)      :     -27.27</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy cost (change)   :     -99.35</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt;   Quota rents (domestic share)  :      +0.00</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt;   ------------------------------------------------</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt;   Net welfare                   :     -11.89</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co">#&gt;   [memo] Terms-of-trade gain    :     -13.94</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co">#&gt;   [memo] DW loss triangle B+D   :      -1.29</span></span></code></pre></div>
+</div>
+<div id="experiment-5-binding-import-quota" class="section level2">
+<h2>Experiment 5: Binding Import Quota</h2>
+<p>We restrict imports to 80% of the benchmark level (240 units). The
+welfare impact depends heavily on who captures the quota rents.</p>
+<div id="a-domestic-rent-capture" class="section level3">
+<h3>5a: Domestic Rent Capture</h3>
+<p>The outcome is equivalent to a tariff in welfare terms if the
+government auctions the licenses.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>quota.level <span class="ot">&lt;-</span> <span class="fl">0.80</span> <span class="sc">*</span> cal<span class="sc">$</span>md        <span class="co"># = 240 units</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>cf5a <span class="ot">&lt;-</span> <span class="fu">solve_quota</span>(cal, <span class="at">quota =</span> quota.level, <span class="at">rent.domestic =</span> <span class="dv">1</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">print_solution</span>(cf5a, <span class="st">&quot;Exp 5a: Quota = 240 units (domestic rent capture)&quot;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; === Exp 5a: Quota = 240 units (domestic rent capture) ===</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt;   Mode          : quota</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt;   Tariff (tau)  :    0.0%</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy :    0.0%</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy :    0.0%</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt;   Quota level   :     240.00</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt;   Prices:</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt;     Domestic (P_d)  : 1.0961</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt;     World    (P_w)  : 0.8694</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt;     Consumer (P_c)  : 1.0961</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt;     Producer (P_p)  : 1.0961</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt;   Quantities:</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt;     Domestic demand  (Q_d) :     972.85</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt;     Domestic supply  (Q_s) :     732.85</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt;     Net imports      (M_d) :     240.00</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt;   Government accounts:</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a><span class="co">#&gt;     Tariff revenue      :       0.00</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="co">#&gt;     Prod. subsidy cost  :       0.00</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="co">#&gt;     Cons. subsidy cost  :       0.00</span></span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co">#&gt;     Quota rent (total)  :      54.40  [domestic share: 100%]</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>wf5a <span class="ot">&lt;-</span> <span class="fu">welfare_change</span>(base, cf5a, cal)</span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="fu">print_welfare</span>(wf5a, <span class="st">&quot;Welfare: Baseline -&gt; Quota, domestic rents&quot;</span>)</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a><span class="co">#&gt; === Welfare: Baseline -&gt; Quota, domestic rents ===</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="co">#&gt;   Delta CS (consumer surplus)   :     -94.77</span></span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a><span class="co">#&gt;   Delta PS (producer surplus)   :     +68.83</span></span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a><span class="co">#&gt;   Tariff revenue  (change)      :     -27.27</span></span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a><span class="co">#&gt;   Quota rents (domestic share)  :     +54.40</span></span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a><span class="co">#&gt;   ------------------------------------------------</span></span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a><span class="co">#&gt;   Net welfare                   :      +1.19</span></span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a><span class="co">#&gt;   [memo] Terms-of-trade gain    :      +9.52</span></span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a><span class="co">#&gt;   [memo] DW loss triangle B+D   :      +5.61</span></span></code></pre></div>
+</div>
+<div id="b-foreign-rent-capture-ver" class="section level3">
+<h3>5b: Foreign Rent Capture (VER)</h3>
+<p>If foreign exporters capture the rents (Voluntary Export Restraint),
+there is an additional loss to the domestic economy.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>cf5b <span class="ot">&lt;-</span> <span class="fu">solve_quota</span>(cal, <span class="at">quota =</span> quota.level, <span class="at">rent.domestic =</span> <span class="dv">0</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">print_solution</span>(cf5b, <span class="st">&quot;Exp 5b: Same quota (foreign rent capture -- VER)&quot;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; === Exp 5b: Same quota (foreign rent capture -- VER) ===</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt;   Mode          : quota</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt;   Tariff (tau)  :    0.0%</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy :    0.0%</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy :    0.0%</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt;   Quota level   :     240.00</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;   Prices:</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;     Domestic (P_d)  : 1.0961</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt;     World    (P_w)  : 0.8694</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt;     Consumer (P_c)  : 1.0961</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt;     Producer (P_p)  : 1.0961</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt;   Quantities:</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt;     Domestic demand  (Q_d) :     972.85</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt;     Domestic supply  (Q_s) :     732.85</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt;     Net imports      (M_d) :     240.00</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt;   Government accounts:</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt;     Tariff revenue      :       0.00</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt;     Prod. subsidy cost  :       0.00</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt;     Cons. subsidy cost  :       0.00</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt;     Quota rent (total)  :      54.40  [domestic share: 0%]</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>wf5b <span class="ot">&lt;-</span> <span class="fu">welfare_change</span>(base, cf5b, cal)</span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="fu">print_welfare</span>(wf5b, <span class="st">&quot;Welfare: Baseline -&gt; Quota, foreign rents (VER)&quot;</span>)</span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; === Welfare: Baseline -&gt; Quota, foreign rents (VER) ===</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt;   Delta CS (consumer surplus)   :     -94.77</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt;   Delta PS (producer surplus)   :     +68.83</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt;   Tariff revenue  (change)      :     -27.27</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt;   Prod. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt;   Cons. subsidy cost (change)   :      -0.00</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt;   Quota rents (domestic share)  :      +0.00</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt;   ------------------------------------------------</span></span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt;   Net welfare                   :     -53.21</span></span>
+<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="co">#&gt;   [memo] Terms-of-trade gain    :      +9.52</span></span>
+<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="co">#&gt;   [memo] DW loss triangle B+D   :      +5.61</span></span></code></pre></div>
+</div>
+</div>
+</div>
+<div id="advanced-analysis" class="section level1">
+<h1>Advanced Analysis</h1>
+<div id="multi-scenario-comparison" class="section level2">
+<h2>Multi-Scenario Comparison</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>tbl <span class="ot">&lt;-</span> <span class="fu">compare_scenarios</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  cal,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="st">&quot;Baseline (tau=10%)&quot;</span>  <span class="ot">=</span> <span class="fu">list</span>(<span class="at">tau =</span> <span class="fl">0.10</span>),</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="st">&quot;Tariff 20%&quot;</span>          <span class="ot">=</span> <span class="fu">list</span>(<span class="at">tau =</span> <span class="fl">0.20</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="st">&quot;Free trade&quot;</span>          <span class="ot">=</span> <span class="fu">list</span>(<span class="at">tau =</span> <span class="fl">0.00</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="st">&quot;Prod sub 10%&quot;</span>        <span class="ot">=</span> <span class="fu">list</span>(<span class="at">tau =</span> <span class="fl">0.00</span>, <span class="at">sp =</span> <span class="fl">0.10</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="st">&quot;Cons sub 10%&quot;</span>        <span class="ot">=</span> <span class="fu">list</span>(<span class="at">tau =</span> <span class="fl">0.00</span>, <span class="at">sc =</span> <span class="fl">0.10</span>),</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="st">&quot;Quota 240 (dom)&quot;</span>     <span class="ot">=</span> <span class="fu">list</span>(<span class="at">quota =</span> <span class="dv">240</span>, <span class="at">rent.domestic =</span> <span class="dv">1</span>),</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="st">&quot;Quota 240 (VER)&quot;</span>     <span class="ot">=</span> <span class="fu">list</span>(<span class="at">quota =</span> <span class="dv">240</span>, <span class="at">rent.domestic =</span> <span class="dv">0</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>)</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(tbl, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="11%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="5%" />
+<col width="5%" />
+<col width="6%" />
+<col width="5%" />
+<col width="5%" />
+<col width="7%" />
+<col width="5%" />
+<col width="7%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">scenario</th>
+<th align="right">tau.pct</th>
+<th align="right">sp.pct</th>
+<th align="right">sc.pct</th>
+<th align="right">quota</th>
+<th align="right">p.d</th>
+<th align="right">p.w</th>
+<th align="right">q.d</th>
+<th align="right">q.s</th>
+<th align="right">m.d</th>
+<th align="right">delta.cs</th>
+<th align="right">delta.ps</th>
+<th align="right">tariff.rev</th>
+<th align="right">prod.sub</th>
+<th align="right">cons.sub</th>
+<th align="right">quota.rents</th>
+<th align="right">tot.gain</th>
+<th align="right">net.welfare</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Baseline (tau=10%)</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NA</td>
+<td align="right">1.000</td>
+<td align="right">0.909</td>
+<td align="right">1000.00</td>
+<td align="right">700.00</td>
+<td align="right">300.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.0</td>
+<td align="right">0.00</td>
+<td align="right">0.0</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">Tariff 20%</td>
+<td align="right">20</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NA</td>
+<td align="right">1.061</td>
+<td align="right">0.884</td>
+<td align="right">982.35</td>
+<td align="right">721.09</td>
+<td align="right">261.26</td>
+<td align="right">-60.62</td>
+<td align="right">43.45</td>
+<td align="right">18.93</td>
+<td align="right">0.0</td>
+<td align="right">0.00</td>
+<td align="right">0.0</td>
+<td align="right">6.48</td>
+<td align="right">1.77</td>
+</tr>
+<tr class="odd">
+<td align="left">Free trade</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">NA</td>
+<td align="right">0.934</td>
+<td align="right">0.934</td>
+<td align="right">1020.59</td>
+<td align="right">676.62</td>
+<td align="right">343.98</td>
+<td align="right">66.37</td>
+<td align="right">-45.22</td>
+<td align="right">-27.27</td>
+<td align="right">0.0</td>
+<td align="right">0.00</td>
+<td align="right">0.0</td>
+<td align="right">-8.67</td>
+<td align="right">-6.12</td>
+</tr>
+<tr class="even">
+<td align="left">Prod sub 10%</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">NA</td>
+<td align="right">0.921</td>
+<td align="right">0.921</td>
+<td align="right">1024.96</td>
+<td align="right">704.61</td>
+<td align="right">320.35</td>
+<td align="right">79.88</td>
+<td align="right">9.28</td>
+<td align="right">-27.27</td>
+<td align="right">-64.9</td>
+<td align="right">0.00</td>
+<td align="right">0.0</td>
+<td align="right">-3.85</td>
+<td align="right">-3.01</td>
+</tr>
+<tr class="odd">
+<td align="left">Cons sub 10%</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">NA</td>
+<td align="right">0.947</td>
+<td align="right">0.947</td>
+<td align="right">1049.12</td>
+<td align="right">681.19</td>
+<td align="right">367.93</td>
+<td align="right">151.35</td>
+<td align="right">-36.62</td>
+<td align="right">-27.27</td>
+<td align="right">0.0</td>
+<td align="right">-99.35</td>
+<td align="right">0.0</td>
+<td align="right">-13.94</td>
+<td align="right">-11.89</td>
+</tr>
+<tr class="even">
+<td align="left">Quota 240 (dom)</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">240</td>
+<td align="right">1.096</td>
+<td align="right">0.869</td>
+<td align="right">972.85</td>
+<td align="right">732.85</td>
+<td align="right">240.00</td>
+<td align="right">-94.77</td>
+<td align="right">68.83</td>
+<td align="right">-27.27</td>
+<td align="right">0.0</td>
+<td align="right">0.00</td>
+<td align="right">54.4</td>
+<td align="right">9.52</td>
+<td align="right">1.19</td>
+</tr>
+<tr class="odd">
+<td align="left">Quota 240 (VER)</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">240</td>
+<td align="right">1.096</td>
+<td align="right">0.869</td>
+<td align="right">972.85</td>
+<td align="right">732.85</td>
+<td align="right">240.00</td>
+<td align="right">-94.77</td>
+<td align="right">68.83</td>
+<td align="right">-27.27</td>
+<td align="right">0.0</td>
+<td align="right">0.00</td>
+<td align="right">0.0</td>
+<td align="right">9.52</td>
+<td align="right">-53.21</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="price-transmission-and-country-size" class="section level2">
+<h2>Price Transmission and Country Size</h2>
+<p>The price transmission elasticity (<span class="math inline">\(d \log
+P_d / d \log(1+\tau)\)</span>) indicates how much of a tariff change is
+passed through to domestic prices. It approaches 1 for a small country
+(infinite import supply elasticity) and falls toward 0 as the country
+becomes larger.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>eps.grid <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">20</span>, <span class="dv">100</span>, <span class="dv">1000</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>trans    <span class="ot">&lt;-</span> <span class="fu">sapply</span>(eps.grid, <span class="cf">function</span>(e) {</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  cal.tmp <span class="ot">&lt;-</span> <span class="fu">calibrate_model</span>(<span class="at">kd=</span><span class="dv">1000</span>, <span class="at">ks=</span><span class="dv">700</span>, <span class="at">eta.d=</span><span class="sc">-</span><span class="fl">0.30</span>, <span class="at">eps.s=</span><span class="fl">0.50</span>, <span class="at">eps.ms=</span>e, <span class="at">tau=</span><span class="fl">0.10</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">linear_approx</span>(cal.tmp, <span class="at">tau=</span><span class="fl">0.20</span>)<span class="sc">$</span>transmission.domestic</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>})</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">eps.ms =</span> eps.grid, <span class="at">transmission =</span> trans)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(res, <span class="at">digits =</span> <span class="dv">4</span>, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Import Supply Elasticity (eps.ms)&quot;</span>, <span class="st">&quot;Price Transmission Elasticity&quot;</span>))</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Import Supply Elasticity (eps.ms)</th>
+<th align="right">Price Transmission Elasticity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">5e-01</td>
+<td align="right">0.1875</td>
+</tr>
+<tr class="even">
+<td align="right">1e+00</td>
+<td align="right">0.3158</td>
+</tr>
+<tr class="odd">
+<td align="right">2e+00</td>
+<td align="right">0.4800</td>
+</tr>
+<tr class="even">
+<td align="right">4e+00</td>
+<td align="right">0.6486</td>
+</tr>
+<tr class="odd">
+<td align="right">8e+00</td>
+<td align="right">0.7869</td>
+</tr>
+<tr class="even">
+<td align="right">2e+01</td>
+<td align="right">0.9023</td>
+</tr>
+<tr class="odd">
+<td align="right">1e+02</td>
+<td align="right">0.9788</td>
+</tr>
+<tr class="even">
+<td align="right">1e+03</td>
+<td align="right">0.9978</td>
+</tr>
+</tbody>
+</table>
+<p>As <code>eps.ms</code> increases, the country approaches the
+small-country case, and the full tariff change is passed through to
+domestic consumers.</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Francois, J.F., and Hall, H.K. (1997). “Partial Equilibrium
+Modeling.” Chapter 5 in <em>Applied Methods for Trade Policy Analysis: A
+Handbook</em>, edited by J.F. Francois and K.A. Reinert. Cambridge:
+Cambridge University Press.</p>
+<p>The original spreadsheet implementations are available from the
+Institute for International and Development Economics at: <a href="https://www.i4ide.org/people/~francois/Models/index.htm" class="uri">https://www.i4ide.org/people/~francois/Models/index.htm</a>.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
