@@ -8,7 +8,7 @@ The package provides functions for calibrating benchmark data, solving counterfa
 
 ```r
 # install.packages("devtools")
-devtools::install_github("nvilloria/agec840tariffmodel")
+devtools::install_github("nvilloria/agec840tariffmodel", build_vignettes = TRUE)
 ```
 
 ## Basic usage
