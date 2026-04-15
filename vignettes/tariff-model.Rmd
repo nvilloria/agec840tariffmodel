@@ -70,7 +70,8 @@ print_solution(base, "Baseline: 10% tariff")
 
 ## Experiment 1: Raise Tariff to 20%
 
-A classic result: the domestic price rises, the world price falls (large-country effect), and imports shrink.
+The domestic price rises, the world price falls (large-country
+effect), and imports shrink.
 
 ```{r experiment1}
 cf1 <- solve_taxes(cal, tau = 0.20)

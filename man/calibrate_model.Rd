@@ -20,7 +20,13 @@ Must be positive.}
 
 \item{eps.ms}{import supply (excess supply) elasticity (must be > 0)}
 
-\item{tau}{benchmark tariff, ad valorem rate (e.g. 0.10 = 10\%; default 0); must be >= 0.}
+\item{tau}{benchmark tariff rate present in the observed data (ad valorem;
+e.g. 0.10 = 10\\%; default 0); must be >= 0. Used solely to recover the
+correct intercepts from benchmark data — particularly \eqn{K_{ms}}, whose
+value depends on the world price \eqn{P_{w0} = 1/(1+\tau_0)}. It does
+\strong{not} set a floor on counterfactual tariff rates: in
+\code{solve_taxes()}, \code{tau} always means the \emph{total} rate in
+the scenario being simulated.}
 
 \item{sp}{benchmark production subsidy rate (ad valorem; default 0); must be >= 0.}
 

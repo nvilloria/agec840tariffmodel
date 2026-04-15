@@ -9,8 +9,17 @@
 #'
 #' \eqn{K_d(P_d(1-sc))^{\eta_d} - K_s(P_d(1+sp))^{\epsilon_s} - K_{ms}(P_d/(1+tau))^{\epsilon_{ms}} = 0}
 #'
+#' **Total rates, not increments.** \code{tau}, \code{sp}, and \code{sc} are
+#' always the \emph{total} policy rates in the scenario being simulated, not
+#' changes relative to the benchmark. The intercepts in \code{cal} are already
+#' calibrated to account for whatever distortions existed at the benchmark
+#' period. To simulate raising a 10\% benchmark tariff by 10 percentage
+#' points, pass \code{tau = 0.20}, not \code{tau = 0.10}.
+#'
 #' @param cal calibrated model list of class \code{model} from [calibrate_model()]
-#' @param tau new tariff (default: calibration benchmark tau)
+#' @param tau total tariff rate in the scenario being simulated (default:
+#'   calibration benchmark \code{tau}, which reproduces the benchmark
+#'   equilibrium exactly)
 #' @param sp new production subsidy rate (default: calibration sp)
 #' @param sc new consumption subsidy rate (default: calibration sc)
 #'

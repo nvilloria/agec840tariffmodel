@@ -25,6 +25,7 @@ the calibration benchmark.}
 \item{prod.sub, cons.sub}{Changes in production and consumption subsidy costs.}
 \item{quota.rents}{Quota rents accruing to domestic agents.}
 \item{tot.gain}{Terms-of-trade gain (memo item).}
+\item{revenue_effect}{Revenue effect: \eqn{\tau_0 \times P_{w0} \times (M_1 - M_0)} (memo item).}
 \item{net.welfare}{Net national welfare change relative to the calibration benchmark.}
 }
 }

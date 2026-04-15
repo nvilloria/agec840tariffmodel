@@ -30,11 +30,14 @@ depresses the world price (large-country effect). Already embedded in
 \code{net.welfare}; reported separately for decomposition.}
 \item{dw.loss}{Memo item: deadweight loss triangles B+D,
 \eqn{0.5 \times \Delta M \times \Delta P_d}. Always non-negative.
-Already embedded in \code{net.welfare}; reported separately for decomposition.
-Note: \code{net.welfare} \eqn{\approx} \code{tot.gain} \eqn{-} \code{dw.loss}
-exactly when the baseline is free trade (\eqn{tau_{base} = 0}); for
-non-zero baseline tariffs a small residual arises from the trapezoidal
-approximation of surplus areas.}
+Already embedded in \code{net.welfare}; reported separately for decomposition.}
+\item{revenue_effect}{Memo item: \eqn{\tau_0 \times P_{w0} \times (M_1 - M_0)}.
+The pre-existing baseline tariff applies to the change in import volume, so this
+term closes the accounting identity:
+\code{net.welfare} \eqn{\approx} \code{tot.gain} \eqn{-} \code{dw.loss}
+\eqn{+} \code{revenue\_effect}. Equals zero when baseline is free trade
+(\eqn{\tau_0 = 0}); negative when a tariff increase reduces imports
+(government loses the baseline tariff on the foregone volume).}
 }
 }
 \description{
@@ -64,6 +67,7 @@ approximation for the constant-elasticity functions used here.
 \item \code{tot.gain}: terms-of-trade gain (\eqn{M_{d1} \times (P_{w0} - P_{w1})}); positive if
 the tariff depresses world prices (large-country effect)
 \item \code{dw.loss}: deadweight welfare triangle B+D (always non-negative loss)
+\item \code{revenue_effect}: pre-existing baseline tariff applied to the change in import volume
 \item \code{net.welfare}: algebraic sum of all domestic welfare components
 }
 

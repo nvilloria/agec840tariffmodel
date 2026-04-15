@@ -9,7 +9,9 @@ solve_taxes(cal, tau = cal$tau, sp = cal$sp, sc = cal$sc)
 \arguments{
 \item{cal}{calibrated model list of class \code{model} from \code{\link[=calibrate_model]{calibrate_model()}}}
 
-\item{tau}{new tariff (default: calibration benchmark tau)}
+\item{tau}{total tariff rate in the scenario being simulated (default:
+calibration benchmark \code{tau}, which reproduces the benchmark
+equilibrium exactly)}
 
 \item{sp}{new production subsidy rate (default: calibration sp)}
 
@@ -41,4 +43,11 @@ It uses base R's \code{uniroot()} to solve the market-clearing condition.
 The function solves one equation in one unknown (\eqn{P_d}):
 
 \eqn{K_d(P_d(1-sc))^{\eta_d} - K_s(P_d(1+sp))^{\epsilon_s} - K_{ms}(P_d/(1+tau))^{\epsilon_{ms}} = 0}
+
+\strong{Total rates, not increments.} \code{tau}, \code{sp}, and \code{sc} are
+always the \emph{total} policy rates in the scenario being simulated, not
+changes relative to the benchmark. The intercepts in \code{cal} are already
+calibrated to account for whatever distortions existed at the benchmark
+period. To simulate raising a 10\\% benchmark tariff by 10 percentage
+points, pass \code{tau = 0.20}, not \code{tau = 0.10}.
 }

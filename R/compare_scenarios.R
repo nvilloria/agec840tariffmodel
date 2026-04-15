@@ -24,6 +24,7 @@
 #'   \item{prod.sub, cons.sub}{Changes in production and consumption subsidy costs.}
 #'   \item{quota.rents}{Quota rents accruing to domestic agents.}
 #'   \item{tot.gain}{Terms-of-trade gain (memo item).}
+#'   \item{revenue_effect}{Revenue effect: \eqn{\tau_0 \times P_{w0} \times (M_1 - M_0)} (memo item).}
 #'   \item{net.welfare}{Net national welfare change relative to the calibration benchmark.}
 #' }
 #' @export
@@ -50,24 +51,25 @@ compare_scenarios <- function(cal, ...) {
     wf  <- welfare_change(base, cf)
 
     data.frame(
-      scenario    = nm,
-      tau.pct     = tau * 100,
-      sp.pct      = sp  * 100,
-      sc.pct      = sc  * 100,
-      quota       = if (is.null(q)) NA_real_ else q,
-      p.d         = round(cf$p.d, 4),
-      p.w         = round(cf$p.w, 4),
-      q.d         = round(cf$q.d, 2),
-      q.s         = round(cf$q.s, 2),
-      m.d         = round(cf$m.d, 2),
-      delta.cs    = round(wf$delta.cs,   2),
-      delta.ps    = round(wf$delta.ps,   2),
-      tariff.rev  = round(wf$tariff.rev, 2),
-      prod.sub    = round(wf$prod.sub,   2),
-      cons.sub    = round(wf$cons.sub,   2),
-      quota.rents = round(wf$quota.rents,2),
-      tot.gain    = round(wf$tot.gain,   2),
-      net.welfare = round(wf$net.welfare,2),
+      scenario       = nm,
+      tau.pct        = tau * 100,
+      sp.pct         = sp  * 100,
+      sc.pct         = sc  * 100,
+      quota          = if (is.null(q)) NA_real_ else q,
+      p.d            = round(cf$p.d, 4),
+      p.w            = round(cf$p.w, 4),
+      q.d            = round(cf$q.d, 2),
+      q.s            = round(cf$q.s, 2),
+      m.d            = round(cf$m.d, 2),
+      delta.cs       = round(wf$delta.cs,        2),
+      delta.ps       = round(wf$delta.ps,        2),
+      tariff.rev     = round(wf$tariff.rev,      2),
+      prod.sub       = round(wf$prod.sub,        2),
+      cons.sub       = round(wf$cons.sub,        2),
+      quota.rents    = round(wf$quota.rents,     2),
+      tot.gain       = round(wf$tot.gain,        2),
+      revenue_effect = round(wf$revenue_effect,  2),
+      net.welfare    = round(wf$net.welfare,      2),
       stringsAsFactors = FALSE
     )
   })
