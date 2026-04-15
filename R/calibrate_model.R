@@ -1,37 +1,41 @@
 #' Calibrate the partial equilibrium model from benchmark data
 #'
-#' `calibrate_model()` recovers the structural constants \eqn{K_d, K_s, K_{ms}} and the
-#' derived excess-demand elasticity \eqn{\eta_{md}} from benchmark (observed) data and
-#' assumed parameter values.
+#' `calibrate_model()` recovers the intercepts \eqn{K_d, K_s, K_{ms}} of the
+#' behavioral functions and the derived excess-demand elasticity \eqn{\eta_{md}}
+#' from benchmark (observed) data and assumed parameter values.
 #'
 #' @details
-#' We normalize the benchmark domestic price to \eqn{P_d = 1} so that benchmark
-#' quantities equal benchmark values (expenditures = quantities when \eqn{P = 1}).
+#' **Units.** \code{kd} and \code{ks} may be physical quantities (e.g., metric
+#' tons) or expenditure values (e.g., millions of USD), provided they use the
+#' same units.  Normalizing \eqn{P_d = 1} makes values and quantities numerically
+#' identical at the benchmark (\eqn{P \times Q = Q} when \eqn{P = 1}), so the
+#' unit choice simply determines the units of all subsequent welfare results.
 #'
-#' * \eqn{K_d}: set so that \eqn{Q_d(P_{c0}) = kd}
-#'   \eqn{K_d = kd / P_{c0}^{\eta_d}} where \eqn{P_{c0} = (1 - sc)} at \eqn{P_d = 1}
-#' * \eqn{K_s}: set so that \eqn{Q_s(P_{p0}) = ks}
-#'   \eqn{K_s = ks / P_{p0}^{\epsilon_s}} where \eqn{P_{p0} = (1 + sp)} at \eqn{P_d = 1}
-#' * \eqn{K_{ms}}: set so that \eqn{M_s(P_{w0}) = md} (market clearing at benchmark)
-#'   \eqn{P_{w0} = 1/(1+tau)}, \eqn{K_{ms} = md / P_{w0}^{\epsilon_{ms}} = md \times (1+tau)^{\epsilon_{ms}}}
-#' * \eqn{\eta_{md}} (excess demand elasticity):
-#'   \eqn{\eta_{md} = (kd \times \eta_d - ks \times \epsilon_s) / md}.
+#' **Structural constants** (all evaluated at \eqn{P_{d0} = 1}):
+#' * \eqn{K_d = kd / P_{c0}^{\eta_d}}, where \eqn{P_{c0} = 1 - sc}.
+#' * \eqn{K_s = ks / P_{p0}^{\varepsilon_s}}, where \eqn{P_{p0} = 1 + sp}.
+#' * \eqn{K_{ms} = md \cdot (1+\tau)^{\varepsilon_{ms}}}, where \eqn{P_{w0} = 1/(1+\tau)}.
+#' * \eqn{\eta_{md} = (kd \cdot \eta_d - ks \cdot \varepsilon_s) / md}
+#'   (excess demand elasticity; always negative).
 #'
 #' **Why \eqn{K_{ms} \neq md} when \eqn{tau > 0}**
 #'
-#' \eqn{K_d}, \eqn{K_s}, and \eqn{K_{ms}} are scale constants for functions
+#' \eqn{K_d}, \eqn{K_s}, and \eqn{K_{ms}} are intercepts of functions
 #' anchored to *different* benchmark prices.  Domestic demand and supply are
 #' evaluated at the domestic price \eqn{P_{d0} = 1}, so \eqn{K_d = kd} and
 #' \eqn{K_s = ks}.  Import supply is evaluated at the *world* price
 #' \eqn{P_{w0} = 1/(1+tau) < 1} when there is a tariff.  To deliver the same
 #' benchmark import quantity \eqn{md} at that lower world price, \eqn{K_{ms}}
 #' must be larger: \eqn{K_{ms} = md \times (1+tau)^{\epsilon_{ms}}}.
-#' Consequently \eqn{K_{ms} = K_d - K_s} only when \eqn{tau = 0} (and
+#' Consequently, \eqn{K_{ms} = K_d - K_s} only when \eqn{tau = 0} (and
 #' \eqn{sp = sc = 0}), when all prices coincide at 1.  The relation that always
 #' holds is between benchmark *quantities*: \eqn{kd - ks = md}.
 #'
-#' @param kd benchmark domestic consumption (positive quantity, e.g. mt)
-#' @param ks benchmark domestic production  (positive quantity)
+#' @param kd benchmark domestic consumption: a physical quantity (e.g., metric
+#'   tons) or an expenditure value (e.g., millions of USD). Must be positive
+#'   and strictly greater than \code{ks}.
+#' @param ks benchmark domestic production, in the same units as \code{kd}.
+#'   Must be positive.
 #' @param eta.d demand price elasticity (must be < 0)
 #' @param eps.s supply price elasticity (must be > 0)
 #' @param eps.ms import supply (excess supply) elasticity (must be > 0)
@@ -45,7 +49,7 @@
 #'     and net imports (\eqn{md = kd - ks}).}
 #'   \item{eta.d, eps.s, eps.ms}{Elasticities as supplied by the user.}
 #'   \item{tau, sp, sc}{Benchmark policy rates as supplied.}
-#'   \item{k.d, k.s, k.ms}{Calibrated scale constants for the demand, domestic supply,
+#'   \item{k.d, k.s, k.ms}{Intercepts of the demand, domestic supply,
 #'     and import supply functions respectively.}
 #'   \item{eta.md}{Derived excess-demand (import demand) elasticity with respect to
 #'     the domestic price; negative by construction.}

@@ -75,7 +75,7 @@ A classic result: the domestic price rises, the world price falls (large-country
 ```{r experiment1}
 cf1 <- solve_taxes(cal, tau = 0.20)
 print_solution(cf1, "Exp 1: Tariff raised to 20%")
-wf1 <- welfare_change(base, cf1, cal)
+wf1 <- welfare_change(base, cf1)
 print_welfare(wf1, "Welfare: Baseline -> Tariff 20%")
 ```
 
@@ -86,7 +86,7 @@ Removing the tariff altogether.
 ```{r experiment2}
 cf2 <- solve_taxes(cal, tau = 0.00)
 print_solution(cf2, "Exp 2: Free trade (tau = 0)")
-wf2 <- welfare_change(base, cf2, cal)
+wf2 <- welfare_change(base, cf2)
 print_welfare(wf2, "Welfare: Baseline -> Free Trade")
 ```
 
@@ -97,7 +97,7 @@ We provide the same producer support ($sp=0.10$), but consumers no longer bear t
 ```{r experiment3}
 cf3 <- solve_taxes(cal, tau = 0.00, sp = 0.10)
 print_solution(cf3, "Exp 3: Free trade + production subsidy sp=10%")
-wf3 <- welfare_change(base, cf3, cal)
+wf3 <- welfare_change(base, cf3)
 print_welfare(wf3, "Welfare: Baseline -> tau=0, sp=10%")
 ```
 
@@ -108,7 +108,7 @@ The government subsidizes consumers directly. Domestic demand and imports rise.
 ```{r experiment4}
 cf4 <- solve_taxes(cal, tau = 0.00, sc = 0.10)
 print_solution(cf4, "Exp 4: Free trade + consumption subsidy sc=10%")
-wf4 <- welfare_change(base, cf4, cal)
+wf4 <- welfare_change(base, cf4)
 print_welfare(wf4, "Welfare: Baseline -> tau=0, sc=10%")
 ```
 
@@ -123,7 +123,7 @@ The outcome is equivalent to a tariff in welfare terms if the government auction
 quota.level <- 0.80 * cal$md        # = 240 units
 cf5a <- solve_quota(cal, quota = quota.level, rent.domestic = 1)
 print_solution(cf5a, "Exp 5a: Quota = 240 units (domestic rent capture)")
-wf5a <- welfare_change(base, cf5a, cal)
+wf5a <- welfare_change(base, cf5a)
 print_welfare(wf5a, "Welfare: Baseline -> Quota, domestic rents")
 ```
 
@@ -133,7 +133,7 @@ If foreign exporters capture the rents (Voluntary Export Restraint), there is an
 ```{r experiment5b}
 cf5b <- solve_quota(cal, quota = quota.level, rent.domestic = 0)
 print_solution(cf5b, "Exp 5b: Same quota (foreign rent capture -- VER)")
-wf5b <- welfare_change(base, cf5b, cal)
+wf5b <- welfare_change(base, cf5b)
 print_welfare(wf5b, "Welfare: Baseline -> Quota, foreign rents (VER)")
 ```
 

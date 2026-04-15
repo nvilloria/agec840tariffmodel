@@ -4,14 +4,12 @@
 \alias{welfare_change}
 \title{Compute welfare changes between a baseline and counterfactual equilibrium}
 \usage{
-welfare_change(base, cf, cal)
+welfare_change(base, cf)
 }
 \arguments{
 \item{base}{baseline equilibrium returned by \code{\link[=solve_taxes]{solve_taxes()}}}
 
 \item{cf}{counterfactual equilibrium returned by \code{\link[=solve_taxes]{solve_taxes()}} or \code{\link[=solve_quota]{solve_quota()}}}
-
-\item{cal}{calibrated model returned by \code{\link[=calibrate_model]{calibrate_model()}}}
 }
 \value{
 A named list of class \code{welfare} with:

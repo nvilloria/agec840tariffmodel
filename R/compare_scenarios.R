@@ -47,7 +47,7 @@ compare_scenarios <- function(cal, ...) {
     } else {
       cf  <- solve_quota(cal, quota = q, sp = sp, sc = sc, rent.domestic = rd)
     }
-    wf  <- welfare_change(base, cf, cal)
+    wf  <- welfare_change(base, cf)
 
     data.frame(
       scenario    = nm,

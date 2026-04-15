@@ -33,7 +33,6 @@
 #'
 #' @param base baseline equilibrium returned by [solve_taxes()]
 #' @param cf counterfactual equilibrium returned by [solve_taxes()] or [solve_quota()]
-#' @param cal calibrated model returned by [calibrate_model()]
 #'
 #' @return A named list of class \code{welfare} with:
 #' \describe{
@@ -60,7 +59,7 @@
 #'     approximation of surplus areas.}
 #' }
 #' @export
-welfare_change <- function(base, cf, cal) {
+welfare_change <- function(base, cf) {
   delta.cs <- -((base$q.d + cf$q.d) / 2) * (cf$p.c - base$p.c)
   delta.ps <- +((base$q.s + cf$q.s) / 2) * (cf$p.p - base$p.p)
   tariff.rev <- cf$tariff.rev - base$tariff.rev
